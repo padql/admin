@@ -1,4 +1,4 @@
-import { Home, List, FileText, Settings, Menu, X } from "lucide-react";
+import { Home, List, FileText, Settings, Menu, X, BadgePercent } from "lucide-react";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
@@ -6,6 +6,7 @@ const menu = [
   { name: "Beranda", icon: Home, href: "/" },
   { name: "Isi Data", icon: FileText, href: "/form" },
   { name: "List", icon: List, href: "/list" },
+  { name: "Isi Promo", icon: BadgePercent, href: "/promo" },
   { name: "Pengaturan", icon: Settings, href: "/settings" },
 ];
 
@@ -20,6 +21,7 @@ export default function Sidebar() {
         md:hidden fixed top-0 left-0 right-0 z-40">
         <span className="font-bold text-lg text-indigo-800">Qudalautt.Hub</span>
         <button
+          type="button"
           className={`p-2 rounded-lg transition-all duration-300
             ${open ? "opacity-0 scale-75 pointer-events-none" : "opacity-100 scale-100"}`}
           onClick={() => setOpen(true)}
@@ -39,6 +41,7 @@ export default function Sidebar() {
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/20">
           <span className="font-bold text-xl text-indigo-800">QHub</span>
           <button
+            type="button"
             className={`md:hidden p-2 rounded-lg transition-all duration-300
               ${open 
                 ? "opacity-100 scale-100 rotate-90" 

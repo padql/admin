@@ -1,5 +1,5 @@
   import { useEffect, useState } from "react"
-  import { Download, _Monitor } from "lucide-react" //ilangin underscore kalo mau dipake
+  import { Download } from "lucide-react"
   import { supabase } from "../lib/supabase.js"
   import * as XLSX from "xlsx"
 

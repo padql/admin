@@ -13,6 +13,7 @@ import Layout from "./components/Layout.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Form from "./pages/PaymentForm.jsx";
 import List from "./pages/PaymentList.jsx";
+import Promo from "./pages/promo.jsx";
 import Settings from "./pages/Settings.jsx";
 
 export default function App() {
@@ -38,6 +39,7 @@ export default function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/form" element={<Form />} />
               <Route path="/list" element={<List />} />
+              <Route path="/promo" element={<Promo />} />
               <Route path="/settings" element={<Settings />} />
             </Routes>
 
