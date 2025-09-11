@@ -10,7 +10,6 @@ export default function PromoForm() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  // 🔹 Load data produk saat component mount
   useEffect(() => {
     const fetchProduk = async () => {
       const { data, error } = await supabase
@@ -18,17 +17,11 @@ export default function PromoForm() {
         .select("id, nama_produk, kategori, durasi")
         .order("nama_produk", { ascending: true });
 
-      if (error) {
-        console.error(error);
-      } else {
-        setProdukList(data);
-      }
+      if (!error) setProdukList(data);
     };
-
     fetchProduk();
   }, []);
 
-  // 🔹 Kalau produk berubah, update kategori & durasi otomatis
   useEffect(() => {
     if (produkId) {
       const produk = produkList.find((p) => p.id === parseInt(produkId));
@@ -61,8 +54,7 @@ export default function PromoForm() {
       setHargaPromo("");
       setKategori("");
       setDurasi("");
-    } catch (err) {
-      console.error(err);
+    } catch (_err) {
       setMessage("Gagal menambahkan promo!");
     } finally {
       setLoading(false);
@@ -70,47 +62,51 @@ export default function PromoForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white shadow-lg rounded-2xl p-6 mt-10">
+    <div className="max-w-md mx-auto bg-white dark:bg-slate-900 dark:text-gray-100 shadow-lg rounded-2xl p-6 mt-10 transition-colors">
       <h2 className="text-xl font-bold mb-4">Tambah Promo</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         
         {/* Select Produk */}
         <div>
-          <label className="block text-sm font-medium mb-1">Aplikasi</label>
+          <label className="block text-sm font-medium mb-1 dark:text-gray-200">
+            Aplikasi
+          </label>
           <select
             value={produkId}
             onChange={(e) => setProdukId(e.target.value)}
             required
-            className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+            className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
           >
             <option value="">-- Pilih Produk --</option>
             {Object.entries(
-            produkList.reduce((acc, p) => {
+              produkList.reduce((acc, p) => {
                 if (!acc[p.nama_produk]) acc[p.nama_produk] = [];
                 acc[p.nama_produk].push(p);
                 return acc;
-            }, {})
+              }, {})
             ).map(([namaProduk, items]) => (
-            <optgroup key={namaProduk} label={namaProduk}>
+              <optgroup key={namaProduk} label={namaProduk}>
                 {items.map((p) => (
-                <option key={p.id} value={p.id}>
+                  <option key={p.id} value={p.id}>
                     {`${p.nama_produk} - ${p.kategori} - ${p.durasi}`}
-                </option>
+                  </option>
                 ))}
-            </optgroup>
+              </optgroup>
             ))}
           </select>
         </div>
 
         {/* Harga Promo */}
         <div>
-          <label className="block text-sm font-medium mb-1">Harga Modal Promo</label>
+          <label className="block text-sm font-medium mb-1 dark:text-gray-200">
+            Harga Modal Promo
+          </label>
           <input
             type="number"
             value={hargaPromo}
             onChange={(e) => setHargaPromo(e.target.value)}
             required
-            className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+            className="w-full border rounded-lg px-3 py-2 bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
           />
         </div>
 

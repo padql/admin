@@ -2,8 +2,9 @@ import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../lib/supabase.js';
 import Modal from '../components/Modal.jsx';
 import { useToast } from '../components/ToastProvider.jsx';
-import { Filter } from 'lucide-react';
+import { Filter, SquareCheckBig, SquareX } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
+import notaImg from "../components/images/nota-img.png";
 
 function fmt(n){ try{return Number(n).toLocaleString('id-ID')}catch{return n} }
 
@@ -27,7 +28,7 @@ function TriStateToggle({ value, onChange, leftLabel = "Desc", rightLabel = "Asc
     <div className="flex items-center gap-2">
       <span
         className={`text-sm ${
-          value === "desc" ? "text-indigo-500" : "text-gray-600"
+          value === "desc" ? "text-indigo-500" : "text-gray-600 dark:text-gray-300"
         }`}
       >
         {leftLabel}
@@ -39,7 +40,7 @@ function TriStateToggle({ value, onChange, leftLabel = "Desc", rightLabel = "Asc
         className="relative w-20 h-8 bg-gray-200 rounded-full flex items-center justify-center"
       >
         <div
-          className={`absolute w-6 h-6 bg-indigo-500 text-white rounded-full flex items-center justify-center text-[10px] transition-all duration-300 ease-in-out
+          className={`absolute w-6 h-6 bg-indigo-900 text-white rounded-full flex items-center justify-center text-[10px] transition-all duration-300 ease-in-out
             ${
               value === ""
                 ? "left-1/2 -translate-x-1/2"
@@ -54,7 +55,7 @@ function TriStateToggle({ value, onChange, leftLabel = "Desc", rightLabel = "Asc
 
       <span
         className={`text-sm ${
-          value === "asc" ? "text-indigo-500" : "text-gray-600"
+          value === "asc" ? "text-indigo-500" : "text-gray-600 dark:text-gray-300"
         }`}
       >
         {rightLabel}
@@ -82,6 +83,9 @@ export default function PaymentList({ refresh }) {
   const pembayaranOptions = ['Transfer', 'Dana', 'QRIS'];
   const [selectedIds, setSelectedIds] = useState([]);
   const [selectionMode, setSelectionMode] = useState(false);
+  const [showNota, setShowNota] = useState(false);
+  const [savedData, setSavedData] = useState(null);
+  const notaRef = useRef();
 
 
   useEffect(()=>{ fetchData(); },[refresh]);
@@ -119,7 +123,7 @@ export default function PaymentList({ refresh }) {
     let res = [...data];
 
     if (filterNamaInput) {
-      res = res.filter(r => (r.nama||'').toLowerCase().includes(filterNamaInput.toLowerCase()));
+      res = res.filter(r => (r.cust||'').toLowerCase().includes(filterNamaInput.toLowerCase()));
     }
 
     if (filters.pembayaran) {
@@ -169,25 +173,44 @@ export default function PaymentList({ refresh }) {
 
   const grouped = groupByMonth(rows);
 
+  function handleOpenNota(row) {
+    setSavedData(row);
+    setShowNota(true);
+  }
+
+  async function downloadNota() {
+    if (!notaRef.current) return;
+    const canvas = await html2canvas(notaRef.current, { scale: 2 });
+    const dataURL = canvas.toDataURL("image/jpeg", 0.9);
+    const link = document.createElement("a");
+    link.href = dataURL;
+    link.download = `nota-${savedData?.cust || "transaksi"}.jpg`;
+    link.click();
+  }
+
   return (
     <>
-      <h1 className="text-2xl font-bold mt-16 mb-6 text-left">Data transaksi</h1>
+      <h1 className="text-2xl font-bold mt-16 mb-6 text-left dark:text-indigo-400">Data transaksi</h1>
       <div className="w-full space-y-4">
 
         {/* Filter input + dropdown */}
-        <div className="flex flex-row gap-3 md:items-center md:justify-between">
+        <div className="flex flex-row gap-3">
           <input 
             placeholder="Filter nama..." 
             value={filterNamaInput} 
             onChange={e=>setFilterNamaInput(e.target.value)}
-            className="max-w-md w-full border px-3 py-2 rounded-xl"
+            className="max-w-xl w-full h-5/6 border px-3 py-2 rounded-xl dark:bg-gray-900/90 
+            text-gray-800 dark:text-gray-200 
+            border-gray-300 dark:border-gray-500"
           />
 
           <div className="relative" ref={dropdownRef}>
             <button 
               type="button"
               onClick={() => setDropdownOpen(o => !o)} 
-              className="relative border px-3 py-2 rounded-xl flex items-center gap-1"
+              className="relative border px-3 py-1.5 rounded-xl flex items-center gap-1 bg-white dark:bg-gray-900/90 
+            text-gray-700 dark:text-gray-200 
+            border-gray-300 dark:border-gray-500"
             >
               <span className="ml-1"><Filter /></span>
 
@@ -198,12 +221,17 @@ export default function PaymentList({ refresh }) {
             </button>
 
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-62 bg-white border rounded-xl shadow p-4 z-50 space-y-4">
+              <div className="absolute right-0 mt-2 w-62 
+                bg-white dark:bg-gray-900/80 backdrop-blur-md
+                border border-gray-200 dark:border-gray-500 
+                rounded-xl shadow p-4 z-50 space-y-4"
+              >
                 
                 {/* Sort Tanggal */}
                 <div>
-                  <div className="font-semibold mb-1">Tanggal</div>
+                  <div className="font-semibold mb-1 dark:text-gray-200">Tanggal</div>
                   <TriStateToggle 
+                    className="dark:text-white"
                     value={filters.tanggal} 
                     onChange={v=>setFilters(f=>({...f, tanggal:v}))}
                     leftLabel="Terbaru"
@@ -213,7 +241,7 @@ export default function PaymentList({ refresh }) {
 
                 {/* Sort Jumlah */}
                 <div>
-                  <div className="font-semibold mb-1">Harga</div>
+                  <div className="font-semibold mb-1 dark:text-gray-200">Harga</div>
                   <TriStateToggle 
                     value={filters.jumlah} 
                     onChange={v=>setFilters(f=>({...f, harga:v}))}
@@ -224,9 +252,9 @@ export default function PaymentList({ refresh }) {
 
                 {/* Filter pembayaran */}
                 <div>
-                  <div className="font-semibold mb-1">pembayaran</div>
+                  <div className="font-semibold mb-1 dark:text-gray-200">pembayaran</div>
                   {pembayaranOptions.map(m => (
-                    <label key={m} className="flex items-center gap-1">
+                    <label key={m} className="flex items-center gap-1 dark:text-gray-200">
                       <input type="radio" 
                         name="pembayaran"
                         checked={filters.pembayaran===m} 
@@ -247,29 +275,30 @@ export default function PaymentList({ refresh }) {
               </div>
             )}
           </div>
-        </div>
-
-        <div className="flex gap-2 mb-4">
+          <div className="flex gap-2 mb-4">
           <button
             type="button"
-            className="px-3 py-1 rounded-lg border"
+            className="px-3 py-1.5 rounded-lg border dark:bg-gray-900/90 
+            text-gray-700 dark:text-gray-200 
+            border-gray-300 dark:border-gray-500"
             onClick={() => {
               setSelectionMode(!selectionMode);
               setSelectedIds([]); // reset pilihan saat masuk/keluar mode
             }}
           >
-            {selectionMode ? "Batal Pilih" : "Pilih Data"}
+            {selectionMode ? [<SquareX key="deselect-icon" />] : [<SquareCheckBig key="select-icon" />]}
           </button>
 
           {selectionMode && selectedIds.length > 0 && (
             <button
               type="button"
-              className="px-3 py-1 rounded-lg bg-red-500 text-white"
+              className="px-3 py-1.5 rounded-lg bg-red-500 text-white"
               onClick={() => setModalOpen(true)}
             >
               Hapus {selectedIds.length} Data
             </button>
           )}
+        </div>
         </div>
 
         {/* List data */}
@@ -281,7 +310,7 @@ export default function PaymentList({ refresh }) {
                 {/* Header bulan */}
                 <div className="flex items-center gap-2 my-4">
                   <div className="flex-grow border-t border-gray-300"></div>
-                  <span className="text-gray-600 text-sm">{month}</span>
+                  <span className="text-gray-600 dark:text-gray-300 text-sm">{month}</span>
                   <div className="flex-grow border-t border-gray-300"></div>
                 </div>
 
@@ -289,22 +318,28 @@ export default function PaymentList({ refresh }) {
                 {items.map(r => {
                   const expanded = expandedId === r.id;
                   return (
-                    <div key={r.id} className="bg-glass rounded-2xl p-4 shadow mb-2">
+                      <div 
+                        key={r.id} 
+                        className="bg-glass dark:bg-gray-900/90 
+                          dark:border dark:border-gray-500 
+                          rounded-2xl p-4 shadow mb-2"
+                        >
                       <div 
                         className="flex items-center justify-between cursor-pointer"
                         onClick={() => setExpandedId(expanded ? null : r.id)}
                       >
                         <div>
-                          <div className="font-medium">{r.cust} • <span className="text-indigo-700">{r.produk}</span></div>
-                          <div className="text-sm text-gray-500">{r.pembayaran} • {fmtDate(r.tanggal)}</div>
+                          <div className="font-medium dark:text-gray-300">{r.cust} • <span className="text-indigo-700 dark:text-indigo-400">{r.produk}</span></div>
+                          <div className="text-sm text-gray-500 dark:text-gray-300">{r.pembayaran} • {fmtDate(r.tanggal)}</div>
                         </div>
                         <div className="flex items-center gap-4">
-                        <div className="text-right font-semibold text-red-500">
+                        <div className="text-right font-semibold text-red-500 dark:text-red-400">
                           Rp {fmt(r.harga)}
                         </div>
                         {selectionMode ? (
                           <input
                             type="checkbox"
+                            className="accent-indigo-500"
                             checked={selectedIds.includes(r.id)}
                             onChange={(e) => {
                               if (e.target.checked) {
@@ -327,15 +362,26 @@ export default function PaymentList({ refresh }) {
                           transition={{ duration: 0.3, ease: "easeInOut" }}
                           className="overflow-hidden"
                         >
-                          <div className="mt-3 text-sm text-indigo-700 border-t pt-2">
+                          <div className="mt-3 text-sm text-indigo-700 dark:text-indigo-400 border-t pt-2">
                             Jenis : {r.jenis || "Tidak ada keterangan."}
                           </div>
-                          <div className="mt-3 text-sm text-indigo-700 border-t pt-2">
+                          <div className="mt-3 text-sm text-indigo-700 dark:text-indigo-400 border-t pt-2">
                             Durasi : {r.durasi || "Tidak ada keterangan."}
                           </div>
-                          <div className="mt-3 text-sm text-indigo-700 border-t pt-2">
+                          <div className="mt-3 text-sm text-indigo-700 dark:text-indigo-400 border-t pt-2">
                             {r.catatan || "Tidak ada catatan."}
                           </div>
+
+                          {/* Tombol Nota di bagian expand */}
+                          <div className="mt-3 border-t pt-2 items-right flex justify-end">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenNota(r)}
+                              className="px-3 py-1 text-sm bg-indigo-500 text-white rounded-lg hover:bg-indigo-600"
+                            >
+                              Lihat Nota
+                            </button>
+                          </div>  
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -371,6 +417,68 @@ export default function PaymentList({ refresh }) {
             Yakin mau hapus {selectedIds.length} data ini? Tindakan ini tidak bisa
             dibatalkan.
           </p>
+        </Modal>
+
+        {/* Modal Nota */}
+        <Modal open={showNota} onClose={() => setShowNota(false)}>
+          <div
+            ref={notaRef}
+            className="relative bg-white text-black rounded-md shadow p-4 font-mono mx-auto overflow-hidden"
+            style={{ width: "240px", minHeight: "auto" }}
+          >
+            {/* Watermark di Tengah */}
+            <img
+              src={notaImg} // pastikan sudah import notaImg
+              alt="Qudalautt.Hub"
+              className="absolute top-1/2 left-1/2 w-42 opacity-5 pointer-events-none select-none"
+              style={{ transform: "translate(-50%, -50%)" }}
+            />
+
+            {/* Konten Nota */}
+            <div className="relative z-10">
+              {/* Header */}
+              <h2 className="text-center font-bold text-base">Qudalautt.Hub</h2>
+              <p className="text-center text-xs mb-2">Layanan Aplikasi Premium</p>
+
+              <hr className="border-dashed border-gray-400 my-2" />
+
+              {/* Isi Nota */}
+              <div className="text-xs space-y-1.5">
+                <p>Customer : {savedData?.cust}</p>
+                <p>Aplikasi : {savedData?.produk}</p>
+                <p>Kategori : {savedData?.jenis}</p>
+                <p>Durasi : {savedData?.durasi}</p>
+                <p>Harga : Rp {Number(savedData?.harga).toLocaleString()}</p>
+                <p>Metode : {savedData?.pembayaran}</p>
+                <p>Tanggal : {savedData?.tanggal}</p>
+                <p>
+                  Catatan :{" "}
+                  {savedData?.catatan?.trim() ? (
+                    savedData.catatan
+                  ) : (
+                    <span className="text-gray-400">-</span>
+                  )}
+                </p>
+              </div>
+
+              <hr className="border-dashed border-gray-400 my-3" />
+
+              {/* Footer */}
+              <p className="text-center text-[11px] text-gray-600 mt-1.5">
+                Terima kasih. Kalau ada yang kurang jelas boleh tanyain aja⚡
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-3 flex justify-center">
+            <button
+              type="button"
+              onClick={downloadNota}
+              className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm hover:bg-indigo-700"
+            >
+              Download Nota (JPG)
+            </button>
+          </div>
         </Modal>
       </div>
     </>

@@ -29,7 +29,7 @@ export default function App() {
   return (
     <ToastProvider>
       <Router>
-        <div className="min-h-screen relative">
+        <div className="min-h-screen relative dark:bg-gray-900/80">
           <Sidebar />
           <BubbleBackground />
 
@@ -43,7 +43,7 @@ export default function App() {
               <Route path="/settings" element={<Settings />} />
             </Routes>
 
-            <footer className="text-center text-sm text-gray-400 mt-8">
+            <footer className="text-center text-sm text-gray-400 mt-8 dark:text-gray-200">
               Admin Qudalautt.Hub
             </footer>
           </Layout>
