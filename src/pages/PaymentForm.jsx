@@ -165,13 +165,18 @@ export default function TransaksiForm({ onSuccess }) {
     setLoading(true);
     try {
       const payload = { ...form, harga: Number(form.harga || 0) };
-      const { error } = await supabase.from("transaksi").insert([payload]);
+      const { data, error } = await supabase
+      .from("transaksi")
+      .insert([payload])
+      .select()
+      .single();
+
       if (error) {
         toast.push("Gagal menyimpan: " + error.message, { duration: 4000 });
       } else {
         toast.push("Transaksi berhasil disimpan ✅");
-        setSavedData(payload);
-        setShowNota(true); // ⬅️ buka modal preview nota
+        setSavedData(data); // ⬅️ sekarang ada id dari Supabase
+        setShowNota(true);
         onSuccess?.();
         setForm({
           cust: "",
@@ -184,6 +189,7 @@ export default function TransaksiForm({ onSuccess }) {
           catatan: "",
         });
       }
+
     } catch (err) {
       toast.push("Error: " + err.message);
     }
@@ -366,7 +372,7 @@ export default function TransaksiForm({ onSuccess }) {
             <hr className="border-dashed border-gray-400 my-2" />
 
             <div className="text-xs space-y-1.5">
-              <p>Customer : {savedData?.cust}</p>
+              <p>ID : {savedData?.id}</p>
               <p>Aplikasi : {savedData?.produk}</p>
               <p>Kategori : {savedData?.jenis}</p>
               <p>Durasi : {savedData?.durasi}</p>
