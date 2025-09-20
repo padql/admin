@@ -80,7 +80,7 @@ export default function PaymentList({ refresh }) {
   const [expandedId, setExpandedId] = useState(null); // id item yg lagi expand
   const toast = useToast();
   const dropdownRef = useRef();
-  const pembayaranOptions = ['Transfer', 'Dana', 'QRIS'];
+  const pembayaranOptions = ['Transfer', 'DANA', 'QRIS'];
   const [selectedIds, setSelectedIds] = useState([]);
   const [selectionMode, setSelectionMode] = useState(false);
   const [showNota, setShowNota] = useState(false);
