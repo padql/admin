@@ -10,7 +10,7 @@ export default function Dashboard() {
   const [count, setCount] = useState(0)
   const [latest, setLatest] = useState([])
   const [index, setIndex] = useState(0)
-  const [bestSeller, setBestSeller] = useState(null) // ✅ state best seller
+  const [bestSeller, setBestSeller] = useState(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,15 +24,11 @@ export default function Dashboard() {
         return
       }
 
-      // total semua harga
       const totalSemua = transaksi.reduce((sum, t) => sum + (t.harga || 0), 0)
       setTotal(totalSemua)
       setCount(transaksi.length)
-
-      // ambil 3 transaksi terakhir
       setLatest(transaksi.slice(0, 3))
 
-      // group by bulan
       const grouped = {}
       transaksi.forEach((item) => {
         const bulan = new Date(item.tanggal).toLocaleString("id-ID", { month: "short" })
@@ -46,7 +42,6 @@ export default function Dashboard() {
       }))
       setData(chartData)
 
-      // cari best seller (berdasarkan frekuensi produk)
       const produkCount = {}
       transaksi.forEach((item) => {
         if (!produkCount[item.produk]) produkCount[item.produk] = { count: 0, total: 0 }
@@ -54,7 +49,6 @@ export default function Dashboard() {
         produkCount[item.produk].total += item.harga || 0
       })
 
-      // urutkan berdasarkan jumlah transaksi terbanyak
       const best = Object.entries(produkCount)
         .sort((a, b) => b[1].count - a[1].count)[0]
 
@@ -100,21 +94,18 @@ export default function Dashboard() {
         Selamat Datang!
       </h1>
 
-      {/* Statistik ringkas + auto-slide */}
-      <div className="grid grid-cols-3 md:grid-cols-3 gap-6">
-        {/* Total Harga */}
+      {/* Statistik ringkas */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
         <div className="bg-orange-500 text-white rounded-2xl p-4 h-[100px] flex flex-col justify-center shadow">
           <h3 className="text-xs opacity-90">Total Pembayaran</h3>
           <p className="text-md font-bold mt-1">{fmtRupiah(total)}</p>
         </div>
 
-        {/* Jumlah Transaksi */}
         <div className="bg-green-500 text-white rounded-2xl p-4 h-[100px] flex flex-col justify-center shadow">
           <h3 className="text-xs opacity-90">Jumlah Transaksi</h3>
           <p className="text-md font-bold mt-1">{count}</p>
         </div>
 
-        {/* Best Seller */}
         <div className="bg-blue-500 text-white rounded-2xl p-4 h-[100px] flex flex-col justify-center shadow">
           <h3 className="text-xs opacity-90">Best Seller!</h3>
           {bestSeller ? (
@@ -155,7 +146,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* indikator dot */}
         <div className="absolute bottom-1 left-0 right-0 flex justify-center space-x-1">
           {latest.map((_, i) => (
             <span
@@ -177,9 +167,12 @@ export default function Dashboard() {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data}>
               <CartesianGrid strokeDasharray="3 3" stroke="#CBD5E1" />
-              <XAxis dataKey="name" stroke="currentColor" className="text-gray-800 dark:text-gray-200" />
-              <YAxis stroke="currentColor" className="text-gray-800 dark:text-gray-200" />
-              <Tooltip formatter={(value) => fmtRupiah(value)} contentStyle={{ backgroundColor: "#1e293b", color: "#fff" }} />
+              <XAxis dataKey="name" stroke="currentColor" />
+              <YAxis stroke="currentColor" />
+              <Tooltip
+                formatter={(value) => fmtRupiah(value)}
+                contentStyle={{ backgroundColor: "#1e293b", color: "#fff" }}
+              />
               <Bar dataKey="total" fill="#30967b" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
