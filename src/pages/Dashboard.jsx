@@ -95,18 +95,18 @@ export default function Dashboard() {
       </h1>
 
       {/* Statistik ringkas */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-        <div className="bg-orange-500 text-white rounded-2xl p-4 h-[100px] flex flex-col justify-center shadow">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="bg-orange-500 text-white rounded-2xl p-4 h-[80px] sm:h-[100px] flex flex-col justify-center shadow">
           <h3 className="text-xs opacity-90">Total Pembayaran</h3>
           <p className="text-md font-bold mt-1">{fmtRupiah(total)}</p>
         </div>
 
-        <div className="bg-green-500 text-white rounded-2xl p-4 h-[100px] flex flex-col justify-center shadow">
+        <div className="bg-green-500 text-white rounded-2xl p-4 h-[80px] sm:h-[100px] flex flex-col justify-center shadow">
           <h3 className="text-xs opacity-90">Jumlah Transaksi</h3>
           <p className="text-md font-bold mt-1">{count}</p>
         </div>
 
-        <div className="bg-blue-500 text-white rounded-2xl p-4 h-[100px] flex flex-col justify-center shadow">
+        <div className="bg-blue-500 text-white rounded-2xl p-4 h-[80px] sm:h-[100px] flex flex-col justify-center shadow">
           <h3 className="text-xs opacity-90">Best Seller!</h3>
           {bestSeller ? (
             <>
