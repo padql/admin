@@ -116,7 +116,7 @@ export default function Dashboard() {
 
         {/* Best Seller */}
         <div className="bg-blue-500 text-white rounded-2xl p-4 h-[100px] flex flex-col justify-center shadow">
-          <h3 className="text-xs opacity-90">Best Seller</h3>
+          <h3 className="text-xs opacity-90">Best Seller!</h3>
           {bestSeller ? (
             <>
               <p className="text-sm font-bold mt-1">{bestSeller.produk}</p>

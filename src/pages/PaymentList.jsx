@@ -135,8 +135,8 @@ export default function PaymentList({ refresh }) {
         ? new Date(a.tanggal)-new Date(b.tanggal)
         : new Date(b.tanggal)-new Date(a.tanggal));
     } 
-    if (filters.jumlah) {
-      res.sort((a,b) => filters.jumlah==='asc'? a.jumlah-b.jumlah : b.jumlah-a.jumlah);
+    if (filters.harga) {
+      res.sort((a,b) => filters.harga==='asc'? a.harga-b.harga : b.harga-a.harga);
     }
 
     return res;
@@ -153,7 +153,7 @@ export default function PaymentList({ refresh }) {
   },[]);
 
   function resetFilters(){
-    setFilters({ tanggal:'', jumlah:'', pembayaran:'' });
+    setFilters({ tanggal:'', harga:'', pembayaran:'' });
     setFilterNamaInput('');
     setDropdownOpen(false);
   }
@@ -215,7 +215,7 @@ export default function PaymentList({ refresh }) {
               <span className="ml-1"><Filter /></span>
 
               {/* indikator kalau ada filter aktif */}
-              {(filters.nama || filters.tanggal !== "" || filters.jumlah !== "" || filters.pembayaran !== "") && (
+              {(filters.nama || filters.tanggal !== "" || filters.harga !== "" || filters.pembayaran !== "") && (
                 <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-indigo-500 rounded-full"></span>
               )}
             </button>
@@ -239,11 +239,11 @@ export default function PaymentList({ refresh }) {
                   />
                 </div>
 
-                {/* Sort Jumlah */}
+                {/* Sort harga */}
                 <div>
                   <div className="font-semibold mb-1 dark:text-gray-200">Harga</div>
                   <TriStateToggle 
-                    value={filters.jumlah} 
+                    value={filters.harga} 
                     onChange={v=>setFilters(f=>({...f, harga:v}))}
                     leftLabel="Terbesar"
                     rightLabel="Terkecil"
