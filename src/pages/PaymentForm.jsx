@@ -140,6 +140,7 @@ export default function TransaksiForm({ onSuccess }) {
     jenis: "",
     durasi: "",
     harga: "",
+    potongan: "",
     pembayaran: "",
     catatan: "",
   });
@@ -157,6 +158,7 @@ export default function TransaksiForm({ onSuccess }) {
     form.jenis &&
     form.durasi &&
     form.harga &&
+    form.potongan &&
     form.pembayaran &&
     !loading;
 
@@ -185,6 +187,7 @@ export default function TransaksiForm({ onSuccess }) {
           jenis: "",
           durasi: "",
           harga: "",
+          potongan: "",
           pembayaran: "",
           catatan: "",
         });
