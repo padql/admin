@@ -299,6 +299,19 @@ export default function TransaksiForm({ onSuccess }) {
           </div>
 
           <div>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-200">Potongan (Rp)</label>
+            <input
+              name="potongan"
+              type="number"
+              value={form.potongan}
+              onChange={change}
+              className="w-full border px-3 py-2 rounded-xl bg-white dark:bg-slate-900 dark:border-slate-700 dark:text-gray-100"
+              placeholder="100000"
+              required
+            />
+          </div>
+
+          <div>
             <label className="block text-sm font-medium mb-1 dark:text-gray-200">Pembayaran</label>
             <select
               name="pembayaran"
@@ -377,6 +390,7 @@ export default function TransaksiForm({ onSuccess }) {
               <p>Kategori : {savedData?.jenis}</p>
               <p>Durasi : {savedData?.durasi}</p>
               <p>Harga : Rp {Number(savedData?.harga).toLocaleString()}</p>
+              <p>Potongan : {savedData?.potongan}</p>
               <p>Metode : {savedData?.pembayaran}</p>
               <p>Tanggal : {savedData?.tanggal}</p>
               <p>
