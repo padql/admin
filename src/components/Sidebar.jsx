@@ -124,47 +124,52 @@ export default function Sidebar() {
                 </h3>
                 <div className="max-h-56 overflow-y-auto space-y-2">
                   {notifications.length > 0 ? (
-  notifications.map((n) => (
-    <div
-      key={n.id}
-      className="flex justify-between items-start w-full p-2 rounded-lg bg-indigo-50/70 dark:bg-indigo-900/40 text-gray-800 dark:text-gray-300 text-sm hover:bg-indigo-100/80 dark:hover:bg-indigo-800/60"
-    >
-      <button
-        type="button"
-        onClick={() => setSelected(n)}
-        className="text-left flex-1"
-      >
-        <p className="font-medium">{n.nama}</p>
-        <p>{n.produk} ({n.jenis})</p>
-        <p className="text-xs text-gray-500">
-          Rp{Number(n.harga).toLocaleString("id-ID")}
-        </p>
-      </button>
+                    notifications.map((n) => (
+                      <div
+                        key={n.id}
+                        className="flex justify-between items-start w-full p-2 rounded-lg bg-indigo-50/70 dark:bg-indigo-900/40 text-gray-800 dark:text-gray-300 text-sm hover:bg-indigo-100/80 dark:hover:bg-indigo-800/60"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setSelected(n)}
+                          className="text-left flex-1"
+                        >
+                          <p className="font-medium">{n.nama}</p>
+                          <p>
+                            {n.produk} ({n.jenis})
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Rp{Number(n.harga).toLocaleString("id-ID")}
+                          </p>
+                        </button>
 
-      <button
-        type="button"
-        onClick={async (e) => {
-          e.stopPropagation(); // biar klik tombol ga trigger setSelected
-          const { error } = await supabase
-            .from("transaksi_temp")
-            .delete()
-            .eq("id", n.id);
+                        <button
+                          type="button"
+                          onClick={async (e) => {
+                            e.stopPropagation(); // biar klik tombol ga trigger setSelected
+                            const { error } = await supabase
+                              .from("transaksi_temp")
+                              .delete()
+                              .eq("id", n.id);
 
-          if (!error) {
-            setNotifications((prev) => prev.filter((item) => item.id !== n.id));
-            showToast("❌ Transaksi dibatalkan");
-          }
-        }}
-        className="ml-2 px-2 py-1 text-xs rounded bg-red-500 text-white hover:bg-red-600"
-      >
-        Hapus
-      </button>
-    </div>
-  ))
-) : (
-  <p className="text-gray-500 text-sm">Belum ada notifikasi</p>
-)}
-
+                            if (!error) {
+                              setNotifications((prev) =>
+                                prev.filter((item) => item.id !== n.id)
+                              );
+                              showToast("❌ Transaksi dibatalkan");
+                            }
+                          }}
+                          className="ml-2 px-2 py-1 text-xs rounded bg-red-500 text-white hover:bg-red-600"
+                        >
+                          Hapus
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-500 text-sm">
+                      Belum ada notifikasi
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -292,7 +297,7 @@ export default function Sidebar() {
                 <select
                   name="pembayaran"
                   required
-                  className="w-full p-2 rounded-lg bg-gray-50 dark:bg-gray-800 border dark:border-gray-700 focus:ring-2 focus:ring-indigo-500"
+                  className="w-full p-2 rounded-lg bg-gray-50 dark:text-gray-400 dark:bg-gray-800 border dark:border-gray-700 focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="">Pilih metode</option>
                   <option value="QRIS">QRIS</option>
