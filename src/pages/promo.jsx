@@ -5,8 +5,8 @@ export default function PromoForm() {
   const [produkList, setProdukList] = useState([]);
   const [produkId, setProdukId] = useState("");
   const [hargaPromo, setHargaPromo] = useState("");
-  const [kategori, setKategori] = useState("");
-  const [durasi, setDurasi] = useState("");
+  const [_kategori, setKategori] = useState("");
+  const [_durasi, setDurasi] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -42,8 +42,6 @@ export default function PromoForm() {
         {
           produk_id: produkId,
           harga_modal_promo: hargaPromo,
-          kategori,
-          durasi,
         },
       ]);
 
