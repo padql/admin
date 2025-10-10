@@ -18,19 +18,14 @@
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function (OneSignal) {
-    await OneSignal.init({
-      appId: "a1fa4581-e57f-4e49-949a-c19fa8efec48",
-      notifyButton: {
-        enable: true,
-        size: 'medium',
-        theme: 'default',
-        position: 'bottom-right',
-      },
-      allowLocalhostAsSecureOrigin: true, // penting biar localhost dianggap aman
-      serviceWorkerParam: { scope: "/" },
-      serviceWorkerPath: "OneSignalSDKWorker.js",
-    });
+  await OneSignal.init({
+    appId: "a1fa4581-e57f-4e49-949a-c19fa8efec48",
   });
+  
+  const reg = await navigator.serviceWorker.getRegistration();
+  console.log("SW reg:", reg);
+});
+
 </script>
 
   </body>
