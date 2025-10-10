@@ -22,23 +22,32 @@ const menu = [
 
 async function kirimPushNotif(title, message) {
   try {
-    await fetch("https://api.onesignal.com/notifications", {
+    const res = await fetch("https://onesignal.com/api/v1/notifications", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Basic jcrik4n5ge7646bau27ovoetb", // ganti
+        "Content-Type": "application/json; charset=utf-8",
+        Authorization: "Basic jcrik4n5ge7646bau27ovoetb", // REST API Key (bukan App ID)
       },
       body: JSON.stringify({
-        app_id: "a1fa4581-e57f-4e49-949a-c19fa8efec48", // ganti pakai app_id kamu
+        app_id: "a1fa4581-e57f-4e49-949a-c19fa8efec48",
         included_segments: ["All"],
         headings: { en: title },
         contents: { en: message },
+        url: "https://adminqhub.vercel.app/",
       }),
     });
+
+    const data = await res.json();
+    console.log("Push response:", data);
+
+    if (!res.ok) {
+      console.error("Push notif gagal:", data);
+    }
   } catch (err) {
     console.error("Gagal kirim push notif:", err);
   }
 }
+
 
 
 export default function Sidebar() {
