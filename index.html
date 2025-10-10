@@ -21,13 +21,13 @@
       OneSignalDeferred.push(async function (OneSignal) {
         await OneSignal.init({
           appId: "a1fa4581-e57f-4e49-949a-c19fa8efec48",
-          safari_web_id: "JIKA_ADA",
-          notifyButton: { enable: true },
+          allowLocalhostAsSecureOrigin: true,
           serviceWorkerParam: { scope: "/" },
-          serviceWorkerPath: "OneSignalSDKWorker.js",
-          serviceWorkerUpdaterPath: "OneSignalSDKUpdaterWorker.js",
+          serviceWorkerPath: "sw.js", // biar PWA dan OneSignal share SW yang sama
         });
-        OneSignal.showSlidedownPrompt();
+
+        // ganti showSlidedownPrompt jadi:
+        await OneSignal.Slidedown.promptPush();
       });
     </script>
 
