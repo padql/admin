@@ -20,6 +20,27 @@ const menu = [
   { name: "Pengaturan", icon: Settings, href: "/settings" },
 ];
 
+async function kirimPushNotif(title, message) {
+  try {
+    await fetch("https://api.onesignal.com/notifications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Basic jcrik4n5ge7646bau27ovoetb", // ganti
+      },
+      body: JSON.stringify({
+        app_id: "a1fa4581-e57f-4e49-949a-c19fa8efec48", // ganti pakai app_id kamu
+        included_segments: ["All"],
+        headings: { en: title },
+        contents: { en: message },
+      }),
+    });
+  } catch (err) {
+    console.error("Gagal kirim push notif:", err);
+  }
+}
+
+
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
@@ -28,6 +49,7 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const [lastIds, setLastIds] = useState([]);
 
+  // Transaksi baru
   useEffect(() => {
     const fetchData = async () => {
       const { data, error } = await supabase
@@ -45,7 +67,7 @@ export default function Sidebar() {
         if (newItems.length > 0) {
           newItems.forEach((id) => {
             const notif = data.find((n) => n.id === id);
-            showToast(`${notif.cust} membuat transaksi baru`);
+            showToast(`${notif.cust} membuat pesanan baru`);
           });
           setLastIds(data.map((n) => n.id));
         }
@@ -70,17 +92,26 @@ export default function Sidebar() {
 
   useEffect(() => {
     const channel = supabase
-      .channel("transaksi_temp_changes")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "transaksi_temp" },
-        (payload) => setNotifications((prev) => [payload.new, ...prev])
-      )
-      .subscribe();
+  .channel("transaksi_temp_changes")
+  .on(
+    "postgres_changes",
+    { event: "INSERT", schema: "public", table: "transaksi_temp" },
+    async (payload) => {
+      const data = payload.new;
+      setNotifications((prev) => [data, ...prev]);
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+      // Tampilkan toast lokal
+      showToast(`${data.cust} membuat transaksi baru`);
+
+      // Kirim push notif global
+      await kirimPushNotif(
+        "Transaksi Baru 🚀",
+        `${data.cust} memesan ${data.produk} (${data.jenis}) segera cek stokya!`
+      );
+    }
+  )
+  .subscribe();
+
   }, []);
 
   return (
@@ -301,7 +332,7 @@ export default function Sidebar() {
                 >
                   <option value="">Pilih metode</option>
                   <option value="QRIS">QRIS</option>
-                  <option value="Dana">Dana</option>
+                  <option value="DANA">DANA</option>
                   <option value="Transfer">Transfer</option>
                 </select>
               </div>
