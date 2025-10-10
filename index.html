@@ -1,15 +1,37 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="utf-8" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#ffffff" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="/src/components/images/logo.png" type="image/png">
+    <link rel="icon" href="/src/components/images/logo.png" type="image/png" />
     <title>Admin QHub</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script
+  src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
+  defer
+></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function (OneSignal) {
+    await OneSignal.init({
+      appId: "a1fa4581-e57f-4e49-949a-c19fa8efec48",
+      notifyButton: {
+        enable: true,
+        size: 'medium',
+        theme: 'default',
+        position: 'bottom-right',
+      },
+      allowLocalhostAsSecureOrigin: true, // penting biar localhost dianggap aman
+      serviceWorkerParam: { scope: "/" },
+      serviceWorkerPath: "OneSignalSDKWorker.js",
+    });
+  });
+</script>
+
   </body>
 </html>
