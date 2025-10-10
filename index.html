@@ -23,6 +23,14 @@
     });
   });
 </script>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("/sw.js")
+    .then((reg) => console.log("Service Worker terdaftar:", reg))
+    .catch((err) => console.error("Gagal daftar SW:", err));
+}
+</script>
 
   </body>
 </html>
