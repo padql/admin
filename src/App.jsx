@@ -26,6 +26,18 @@ export default function App() {
 
   if (loading) return <Loading />;
 
+  useEffect(() => {
+  window.OneSignal = window.OneSignal || [];
+  OneSignal.push(function () {
+    OneSignal.init({
+      appId: "a1fa4581-e57f-4e49-949a-c19fa8efec48",
+      allowLocalhostAsSecureOrigin: true,
+    });
+
+    OneSignal.showSlidedownPrompt();
+  });
+}, []);
+
   return (
     <ToastProvider>
       <Router>
