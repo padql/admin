@@ -11,25 +11,16 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    <script
-      src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
-      defer
-    ></script>
-
-    <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function (OneSignal) {
-        await OneSignal.init({
-          appId: "a1fa4581-e57f-4e49-949a-c19fa8efec48",
-          allowLocalhostAsSecureOrigin: true,
-          serviceWorkerParam: { scope: "/" },
-          serviceWorkerPath: "sw.js", // biar PWA dan OneSignal share SW yang sama
-        });
-
-        // ganti showSlidedownPrompt jadi:
-        await OneSignal.Slidedown.promptPush();
-      });
-    </script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function (OneSignal) {
+    await OneSignal.init({
+      appId: "a1fa4581-e57f-4e49-949a-c19fa8efec48",
+    });
+    OneSignal.showSlidedownPrompt();
+  });
+</script>
 
     <script>
       if ("serviceWorker" in navigator) {

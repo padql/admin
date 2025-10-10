@@ -20,36 +20,6 @@ const menu = [
   { name: "Pengaturan", icon: Settings, href: "/settings" },
 ];
 
-async function kirimPushNotif(title, message) {
-  try {
-    const res = await fetch("https://onesignal.com/api/v1/notifications", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        Authorization: "Basic jcrik4n5ge7646bau27ovoetb", // REST API Key (bukan App ID)
-      },
-      body: JSON.stringify({
-        app_id: "a1fa4581-e57f-4e49-949a-c19fa8efec48",
-        included_segments: ["All"],
-        headings: { en: title },
-        contents: { en: message },
-        url: "https://adminqhub.vercel.app/",
-      }),
-    });
-
-    const data = await res.json();
-    console.log("Push response:", data);
-
-    if (!res.ok) {
-      console.error("Push notif gagal:", data);
-    }
-  } catch (err) {
-    console.error("Gagal kirim push notif:", err);
-  }
-}
-
-
-
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
@@ -101,26 +71,17 @@ export default function Sidebar() {
 
   useEffect(() => {
     const channel = supabase
-  .channel("transaksi_temp_changes")
-  .on(
-    "postgres_changes",
-    { event: "INSERT", schema: "public", table: "transaksi_temp" },
-    async (payload) => {
-      const data = payload.new;
-      setNotifications((prev) => [data, ...prev]);
+      .channel("transaksi_temp_changes")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "transaksi_temp" },
+        (payload) => setNotifications((prev) => [payload.new, ...prev])
+      )
+      .subscribe();
 
-      // Tampilkan toast lokal
-      showToast(`${data.cust} membuat transaksi baru`);
-
-      // Kirim push notif global
-      await kirimPushNotif(
-        "Transaksi Baru 🚀",
-        `${data.cust} memesan ${data.produk} (${data.jenis}) segera cek stokya!`
-      );
-    }
-  )
-  .subscribe();
-
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   return (
