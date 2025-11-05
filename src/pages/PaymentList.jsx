@@ -445,12 +445,13 @@ export default function PaymentList({ refresh }) {
 
               {/* Isi Nota */}
               <div className="text-xs space-y-1.5">
-                <p>Customer : {savedData?.cust}</p>
+                <p>ID : {savedData?.id}</p>
                 <p>Aplikasi : {savedData?.produk}</p>
                 <p>Kategori : {savedData?.jenis}</p>
                 <p>Durasi : {savedData?.durasi}</p>
                 <p>Harga : Rp {Number(savedData?.harga).toLocaleString()}</p>
-                <p>Potongan : {savedData?.potongan}</p>
+                <p>Potongan : {Number(savedData?.potongan).toLocaleString()}</p>
+                <p>Total Harga : Rp {(Number(savedData?.harga) - Number(savedData?.potongan || 0)).toLocaleString()}</p>
                 <p>Metode : {savedData?.pembayaran}</p>
                 <p>Tanggal : {savedData?.tanggal}</p>
                 <p>
