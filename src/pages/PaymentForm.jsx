@@ -9,8 +9,7 @@ import notaImg from "../components/images/nota-img.png";
   alt="Qudalautt.Hub"
   className="absolute top-1/2 left-1/2 w-32 opacity-10 pointer-events-none select-none"
   style={{ transform: "translate(-50%, -50%)" }}
-/>
-
+/>;
 
 /* ---------- Modal ---------- */
 function Modal({ open, onClose, children }) {
@@ -32,7 +31,15 @@ function Modal({ open, onClose, children }) {
 }
 
 /* ---------- SLIDER ---------- */
-function SlideToSubmit({ onTrigger, disabled = false, loading = false, label = "Geser untuk Simpan", successLabel = "Terkirim", width = 280, height = 48 }) {
+function SlideToSubmit({
+  onTrigger,
+  disabled = false,
+  loading = false,
+  label = "Geser untuk Simpan",
+  successLabel = "Terkirim",
+  width = 280,
+  height = 48,
+}) {
   const KNOB = 44;
   const MAX = Math.max(0, width - KNOB);
 
@@ -96,16 +103,35 @@ function SlideToSubmit({ onTrigger, disabled = false, loading = false, label = "
     <div
       ref={trackRef}
       className="relative select-none overflow-hidden rounded-full"
-      style={{ width, height, background: disabled ? "#e5e7eb" : "#f3f4f6", touchAction: "none" }}
+      style={{
+        width,
+        height,
+        background: disabled ? "#e5e7eb" : "#f3f4f6",
+        touchAction: "none",
+      }}
       onPointerMove={pointerMove}
       onPointerUp={pointerUp}
       onPointerCancel={pointerUp}
       onPointerLeave={pointerUp}
     >
-      <div className="absolute left-0 top-0 h-full transition-[width] duration-150 ease-out" style={{ width: `${progressPct}%`, background: disabled ? "#c7cdd6" : "#dbeaf9" }} />
+      <div
+        className="absolute left-0 top-0 h-full transition-[width] duration-150 ease-out"
+        style={{
+          width: `${progressPct}%`,
+          background: disabled ? "#c7cdd6" : "#dbeaf9",
+        }}
+      />
 
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <span className={`text-sm font-medium transition-colors ${completed ? "text-green-700" : disabled ? "text-gray-400" : "text-gray-700"}`}>
+        <span
+          className={`text-sm font-medium transition-colors ${
+            completed
+              ? "text-green-700"
+              : disabled
+              ? "text-gray-400"
+              : "text-gray-700"
+          }`}
+        >
           {loading ? "Menyimpan..." : completed ? successLabel : label}
         </span>
       </div>
@@ -115,16 +141,32 @@ function SlideToSubmit({ onTrigger, disabled = false, loading = false, label = "
         role="button"
         aria-label="Geser untuk submit"
         className={`absolute top-1 flex items-center justify-center rounded-full shadow
-          ${disabled ? "bg-gray-300 dark:bg-gray-500" : "bg-indigo-500 dark:bg-gray-800"}
-          ${dragging ? "transition-none" : "transition-transform duration-300 ease-out"}
+          ${
+            disabled
+              ? "bg-gray-300 dark:bg-gray-500"
+              : "bg-indigo-500 dark:bg-gray-800"
+          }
+          ${
+            dragging
+              ? "transition-none"
+              : "transition-transform duration-300 ease-out"
+          }
           text-white`}
-        style={{ width: KNOB - 2, height: KNOB - 2, transform: `translateX(${x}px)`, left: 2, touchAction: "none" }}
+        style={{
+          width: KNOB - 2,
+          height: KNOB - 2,
+          transform: `translateX(${x}px)`,
+          left: 2,
+          touchAction: "none",
+        }}
         onPointerDown={pointerDown}
       >
         {completed ? "✓" : "➜"}
       </div>
 
-      {(disabled || loading) && <div className="absolute inset-0 cursor-not-allowed" />}
+      {(disabled || loading) && (
+        <div className="absolute inset-0 cursor-not-allowed" />
+      )}
     </div>
   );
 }
@@ -147,6 +189,40 @@ export default function TransaksiForm({ onSuccess }) {
 
   const [showNota, setShowNota] = useState(false);
   const [savedData, setSavedData] = useState(null);
+  const [showParseModal, setShowParseModal] = useState(false);
+  const [rawMessage, setRawMessage] = useState("");
+
+  const parseMessage = () => {
+    const msg = rawMessage;
+    const nameMatch = msg.match(/Halo,\s*\*?([A-Za-z\s]+)\*?/i);
+    const productMatch = msg.match(/pesan\s*\*?([A-Za-z\s]+)\*?/i);
+    const priceMatch = msg.match(/Harga\s*Rp\s*([\d.,]+)/i);
+
+    const cust = nameMatch ? nameMatch[1].trim() : "";
+    const produkFull = productMatch ? productMatch[1].trim() : "";
+    const harga = priceMatch ? priceMatch[1].replace(/[.,]/g, "") : "";
+
+    // Pisahin produk, jenis, dan durasi dari teks produk
+    let [produk, jenis, ...durasiParts] = produkFull.split(" ");
+    const durasi = durasiParts.join(" ").trim();
+
+    jenis = jenis || "";
+
+    setForm({
+      ...form,
+      cust,
+      produk,
+      jenis,
+      durasi,
+      harga,
+      tanggal: new Date().toISOString().split("T")[0],
+    });
+
+    setShowParseModal(false);
+    setRawMessage("");
+    toast.push("Pesan berhasil diproses ✅");
+  };
+
   const notaRef = useRef();
 
   const change = (e) => setForm({ ...form, [e.target.name]: e.target.value });
@@ -168,10 +244,10 @@ export default function TransaksiForm({ onSuccess }) {
     try {
       const payload = { ...form, harga: Number(form.harga || 0) };
       const { data, error } = await supabase
-      .from("transaksi")
-      .insert([payload])
-      .select()
-      .single();
+        .from("transaksi")
+        .insert([payload])
+        .select()
+        .single();
 
       if (error) {
         toast.push("Gagal menyimpan: " + error.message, { duration: 4000 });
@@ -192,7 +268,6 @@ export default function TransaksiForm({ onSuccess }) {
           catatan: "",
         });
       }
-
     } catch (err) {
       toast.push("Error: " + err.message);
     }
@@ -222,9 +297,20 @@ export default function TransaksiForm({ onSuccess }) {
         onSubmit={(e) => e.preventDefault()}
         className="bg-glass dark:bg-slate-800/60 dark:border dark:border-slate-700 rounded-3xl p-6 shadow-lg w-full transition-colors"
       >
+        <div className="mb-4 flex justify-start">
+          <button
+            type="button"
+            onClick={() => setShowParseModal(true)}
+            className="bg-indigo-700 hover:bg-indigo-600 text-white text-sm px-3 py-2 rounded-lg"
+          >
+            Isi Otomatis dari Pesan
+          </button>
+        </div>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium mb-1 dark:text-gray-200">Customer</label>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-200">
+              Customer
+            </label>
             <input
               name="cust"
               value={form.cust}
@@ -236,7 +322,9 @@ export default function TransaksiForm({ onSuccess }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1 dark:text-gray-200">Aplikasi</label>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-200">
+              Aplikasi
+            </label>
             <select
               name="produk"
               value={form.produk}
@@ -259,7 +347,9 @@ export default function TransaksiForm({ onSuccess }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1 dark:text-gray-200">Kategori</label>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-200">
+              Kategori
+            </label>
             <select
               name="jenis"
               value={form.jenis}
@@ -277,7 +367,9 @@ export default function TransaksiForm({ onSuccess }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1 dark:text-gray-200">Durasi</label>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-200">
+              Durasi
+            </label>
             <input
               name="durasi"
               value={form.durasi}
@@ -289,7 +381,9 @@ export default function TransaksiForm({ onSuccess }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1 dark:text-gray-200">Harga (Rp)</label>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-200">
+              Harga (Rp)
+            </label>
             <input
               name="harga"
               type="number"
@@ -302,7 +396,9 @@ export default function TransaksiForm({ onSuccess }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1 dark:text-gray-200">Potongan (Rp)</label>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-200">
+              Potongan (Rp)
+            </label>
             <input
               name="potongan"
               type="number"
@@ -315,7 +411,9 @@ export default function TransaksiForm({ onSuccess }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1 dark:text-gray-200">Pembayaran</label>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-200">
+              Pembayaran
+            </label>
             <select
               name="pembayaran"
               value={form.pembayaran}
@@ -331,7 +429,9 @@ export default function TransaksiForm({ onSuccess }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1 dark:text-gray-200">Tanggal</label>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-200">
+              Tanggal
+            </label>
             <input
               name="tanggal"
               type="date"
@@ -343,7 +443,9 @@ export default function TransaksiForm({ onSuccess }) {
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium mb-1 dark:text-gray-200">Catatan (opsional)</label>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-200">
+              Catatan (opsional)
+            </label>
             <textarea
               name="catatan"
               value={form.catatan}
@@ -366,6 +468,27 @@ export default function TransaksiForm({ onSuccess }) {
           </div>
         </div>
       </form>
+
+      <Modal open={showParseModal} onClose={() => setShowParseModal(false)}>
+        <h2 className="text-lg font-semibold mb-2 dark:text-gray-200">
+          Isi Otomatis dari Pesan
+        </h2>
+        <textarea
+          value={rawMessage}
+          onChange={(e) => setRawMessage(e.target.value)}
+          placeholder="Tempel pesan WhatsApp di sini..."
+          className="w-full border rounded-md p-2 h-32 text-sm bg-white dark:bg-slate-900 dark:border-slate-700 dark:text-gray-100"
+        />
+        <div className="flex justify-end mt-4">
+          <button
+            type="button"
+            onClick={parseMessage}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm"
+          >
+            Proses Pesan
+          </button>
+        </div>
+      </Modal>
 
       {/* Modal Nota */}
       <Modal open={showNota} onClose={() => setShowNota(false)}>
@@ -394,6 +517,7 @@ export default function TransaksiForm({ onSuccess }) {
               <p>Durasi : {savedData?.durasi}</p>
               <p>Harga : Rp {Number(savedData?.harga).toLocaleString()}</p>
               <p>Potongan : {savedData?.potongan}</p>
+              <p>Total Harga : Rp {(Number(savedData?.harga) - Number(savedData?.potongan || 0)).toLocaleString()}</p>
               <p>Metode : {savedData?.pembayaran}</p>
               <p>Tanggal : {savedData?.tanggal}</p>
               <p>
