@@ -184,7 +184,7 @@ export default function PaymentList({ refresh }) {
     const dataURL = canvas.toDataURL("image/jpeg", 0.9);
     const link = document.createElement("a");
     link.href = dataURL;
-    link.download = `nota-${savedData?.cust || "transaksi"}.jpg`;
+    link.download = `nota-${savedData?.cust || "transaksi"}-${savedData?.id}.jpg`;
     link.click();
   }
 
@@ -449,6 +449,7 @@ export default function PaymentList({ refresh }) {
                 <p>Kategori : {savedData?.jenis}</p>
                 <p>Durasi : {savedData?.durasi}</p>
                 <p>Harga : Rp {Number(savedData?.harga).toLocaleString()}</p>
+                <p>Potongan : {savedData?.potongan}</p>
                 <p>Metode : {savedData?.pembayaran}</p>
                 <p>Tanggal : {savedData?.tanggal}</p>
                 <p>
