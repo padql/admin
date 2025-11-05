@@ -5,6 +5,7 @@ import { useToast } from '../components/ToastProvider.jsx';
 import { Filter, SquareCheckBig, SquareX } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 import notaImg from "../components/images/nota-img.png";
+import html2canvas from 'html2canvas';
 
 function fmt(n){ try{return Number(n).toLocaleString('id-ID')}catch{return n} }
 
