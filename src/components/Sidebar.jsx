@@ -135,7 +135,7 @@ export default function Sidebar() {
                           onClick={() => setSelected(n)}
                           className="text-left flex-1"
                         >
-                          <p className="font-medium">{n.nama}</p>
+                          <p className="font-medium">{n.cust}</p>
                           <p>
                             {n.produk} ({n.jenis})
                           </p>
