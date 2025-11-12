@@ -135,9 +135,8 @@ export default function Sidebar() {
                           onClick={() => setSelected(n)}
                           className="text-left flex-1"
                         >
-                          <p className="font-medium">{n.cust}</p>
                           <p>
-                            {n.produk} ({n.jenis})
+                            {n.cust} - {n.produk} ({n.jenis})
                           </p>
                           <p className="text-xs text-gray-500">
                             Rp{Number(n.harga).toLocaleString("id-ID")}
